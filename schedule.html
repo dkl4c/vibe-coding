@@ -135,14 +135,32 @@
       if (todo) {
         todo.completed = !todo.completed;
         saveTodos(todos);
+
+        // 如果是作业关联的待办，同步更新作业状态
+        if (todo.homeworkId) {
+          const homework = JSON.parse(localStorage.getItem('course_homework') || '[]');
+          const hw = homework.find(h => h.id === todo.homeworkId);
+          if (hw) {
+            hw.completed = todo.completed;
+            localStorage.setItem('course_homework', JSON.stringify(homework));
+          }
+        }
       }
     }
 
     // 删除待办
     function deleteTodo(todoId) {
       const todos = loadTodos();
+      const todo = todos.find(t => t.id === todoId);
       const filtered = todos.filter(t => t.id !== todoId);
       saveTodos(filtered);
+
+      // 如果是作业关联的待办，也删除对应的作业
+      if (todo && todo.homeworkId) {
+        const homework = JSON.parse(localStorage.getItem('course_homework') || '[]');
+        const filteredHw = homework.filter(h => h.id !== todo.homeworkId);
+        localStorage.setItem('course_homework', JSON.stringify(filteredHw));
+      }
     }
 
     // 获取日期状态

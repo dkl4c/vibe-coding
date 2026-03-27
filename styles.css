@@ -725,6 +725,98 @@ ul {
   font-size: 1rem;
 }
 
+.homework-add-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.homework-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.homework-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.homework-checkbox .checkmark {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--mint-green);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.homework-checkbox input:checked ~ .checkmark {
+  background: var(--mint-green);
+}
+
+.homework-checkbox input:checked ~ .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+}
+
+.homework-card .homework-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.homework-title {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  margin: 10px 0;
+}
+
+.homework-desc {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.homework-delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.homework-delete-btn:hover {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+}
+
+.homework-card.completed .homework-title {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.homework-status.overdue {
+  color: #ff6b6b;
+}
+
+.homework-status.today {
+  color: #ffa500;
+}
+
+.homework-status.soon {
+  color: #ff9800;
+}
+
 /* ===== 帮助页面 ===== */
 .help-section {
   background: rgba(255, 255, 255, 0.85);

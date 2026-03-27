@@ -34,105 +34,56 @@
         <h2 class="section-title fade-in">📋 课程作业</h2>
 
         <!-- 课程选择标签 -->
-        <div class="homework-course-tabs fade-in">
-          <button type="button" class="course-tab active" data-course="atmosphere">🌸 氛围编程</button>
-          <button type="button" class="course-tab" data-course="math">📐 高等数学</button>
-          <button type="button" class="course-tab" data-course="mathmethods">🔢 数学物理方法</button>
-          <button type="button" class="course-tab" data-course="theophy">⚛️ 理论物理基础</button>
-          <button type="button" class="course-tab" data-course="macro">📊 中级宏观经济学</button>
+        <div class="homework-course-tabs fade-in" id="homeworkTabs">
+          <!-- 标签将由 JavaScript 渲染 -->
         </div>
 
-        <!-- 氛围编程作业 -->
-        <div id="homeworkAtmosphere" class="homework-list">
-          <div class="homework-card fade-in">
-            <div class="homework-header">
-              <span class="homework-status completed">✓ 已完成</span>
-              <span class="homework-date">2026年3月</span>
-            </div>
-            <h3>作业一：搭建个人学习主页</h3>
-            <p>使用 HTML + CSS + JavaScript 创建个人学习主页，展示课程信息和个人介绍。</p>
-            <div class="homework-meta">
-              <span class="homework-module">模块一：认知与基础</span>
-            </div>
-            <a href="https://github.com" target="_blank" rel="noopener" class="homework-link">
-              <svg height="16" width="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              查看代码
-            </a>
-          </div>
-
-          <div class="homework-card fade-in">
-            <div class="homework-header">
-              <span class="homework-status in-progress">⏳ 进行中</span>
-              <span class="homework-date">2026年3月</span>
-            </div>
-            <h3>作业二：响应式布局练习</h3>
-            <p>实现一个适配手机和电脑的响应式页面布局。</p>
-            <div class="homework-meta">
-              <span class="homework-module">模块二：网页开发基础</span>
-            </div>
-            <a href="https://github.com" target="_blank" rel="noopener" class="homework-link">
-              <svg height="16" width="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              查看代码
-            </a>
-          </div>
-
-          <div class="homework-card fade-in">
-            <div class="homework-header">
-              <span class="homework-status pending">📋 待开始</span>
-              <span class="homework-date">2026年3月</span>
-            </div>
-            <h3>作业三：JavaScript 交互</h3>
-            <p>添加动态效果和用户交互功能到个人主页中。</p>
-            <div class="homework-meta">
-              <span class="homework-module">模块二：网页开发基础</span>
-            </div>
-            <a href="https://github.com" target="_blank" rel="noopener" class="homework-link">
-              <svg height="16" width="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              查看代码
-            </a>
-          </div>
+        <!-- 作业列表 -->
+        <div id="homeworkList" class="homework-list">
+          <!-- 作业卡片将由 JavaScript 渲染 -->
         </div>
 
-        <!-- 高等数学作业 -->
-        <div id="homeworkMath" class="homework-list" style="display: none;">
-          <div class="homework-empty fade-in">
-            <span class="empty-icon">📐</span>
-            <p>高等数学作业将在课程开始后显示</p>
-          </div>
-        </div>
-
-        <!-- 数学物理方法作业 -->
-        <div id="homeworkMathmethods" class="homework-list" style="display: none;">
-          <div class="homework-empty fade-in">
-            <span class="empty-icon">🔢</span>
-            <p>数学物理方法作业将在课程开始后显示</p>
-          </div>
-        </div>
-
-        <!-- 理论物理基础作业 -->
-        <div id="homeworkTheophy" class="homework-list" style="display: none;">
-          <div class="homework-empty fade-in">
-            <span class="empty-icon">⚛️</span>
-            <p>理论物理基础作业将在课程开始后显示</p>
-          </div>
-        </div>
-
-        <!-- 中级宏观经济学作业 -->
-        <div id="homeworkMacro" class="homework-list" style="display: none;">
-          <div class="homework-empty fade-in">
-            <span class="empty-icon">📊</span>
-            <p>中级宏观经济学作业将在课程开始后显示</p>
-          </div>
+        <!-- 添加作业按钮 -->
+        <div class="homework-add-section fade-in">
+          <button type="button" id="addHomeworkBtn" class="course-btn">➕ 添加作业</button>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- 添加作业模态框 -->
+  <div id="addHomeworkModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>添加作业</h3>
+        <button type="button" class="modal-close" onclick="closeHomeworkModal()">&times;</button>
+      </div>
+      <form id="addHomeworkForm" class="modal-form">
+        <div class="form-group">
+          <label for="homeworkTitle">作业标题 *</label>
+          <input type="text" id="homeworkTitle" required placeholder="例如：第一章练习题">
+        </div>
+        <div class="form-group">
+          <label for="homeworkCourse">所属课程 *</label>
+          <select id="homeworkCourse" required>
+            <!-- 选项将由 JavaScript 渲染 -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="homeworkDesc">作业描述</label>
+          <textarea id="homeworkDesc" rows="3" placeholder="作业的具体要求..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="homeworkDueDate">截止日期</label>
+          <input type="date" id="homeworkDueDate">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="course-btn-secondary" onclick="closeHomeworkModal()">取消</button>
+          <button type="submit" class="course-btn">添加</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- 页脚 -->
   <footer class="footer">
@@ -142,6 +93,237 @@
     </div>
   </footer>
 
+  <script src="courses.js"></script>
   <script src="script.js"></script>
+  <script>
+    // ===== 作业管理 =====
+    const HOMEWORK_KEY = 'course_homework';
+    let currentHomeworkCourse = '';
+
+    // 加载作业
+    function loadHomework() {
+      return JSON.parse(localStorage.getItem(HOMEWORK_KEY) || '[]');
+    }
+
+    // 保存作业
+    function saveHomework(homework) {
+      localStorage.setItem(HOMEWORK_KEY, JSON.stringify(homework));
+    }
+
+    // 添加作业
+    function addHomework(title, courseId, description, dueDate) {
+      const homework = loadHomework();
+      const newHomework = {
+        id: 'hw_' + Date.now(),
+        title,
+        courseId,
+        description: description || '',
+        dueDate: dueDate || null,
+        completed: false,
+        createdAt: new Date().toISOString()
+      };
+      homework.push(newHomework);
+      saveHomework(homework);
+
+      // 同时添加到待办事项
+      if (dueDate) {
+        const todos = JSON.parse(localStorage.getItem('user_todos') || '[]');
+        todos.push({
+          id: 'todo_' + Date.now(),
+          text: '📋 ' + title,
+          dueDate,
+          courseId,
+          completed: false,
+          homeworkId: newHomework.id,
+          createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('user_todos', JSON.stringify(todos));
+      }
+
+      return newHomework;
+    }
+
+    // 切换作业完成状态
+    function toggleHomeworkComplete(homeworkId) {
+      const homework = loadHomework();
+      const item = homework.find(h => h.id === homeworkId);
+      if (item) {
+        item.completed = !item.completed;
+        saveHomework(homework);
+
+        // 同步更新待办事项
+        const todos = JSON.parse(localStorage.getItem('user_todos') || '[]');
+        const todo = todos.find(t => t.homeworkId === homeworkId);
+        if (todo) {
+          todo.completed = item.completed;
+          localStorage.setItem('user_todos', JSON.stringify(todos));
+        }
+      }
+    }
+
+    // 删除作业
+    function deleteHomework(homeworkId) {
+      if (!confirm('确定要删除这个作业吗？')) return;
+      const homework = loadHomework();
+      const filtered = homework.filter(h => h.id !== homeworkId);
+      saveHomework(filtered);
+
+      // 同时删除关联的待办事项
+      const todos = JSON.parse(localStorage.getItem('user_todos') || '[]');
+      const filteredTodos = todos.filter(t => t.homeworkId !== homeworkId);
+      localStorage.setItem('user_todos', JSON.stringify(filteredTodos));
+
+      renderHomework();
+    }
+
+    // 渲染课程标签
+    function renderHomeworkTabs() {
+      const tabsContainer = document.getElementById('homeworkTabs');
+      const courses = getCoursesArray();
+
+      tabsContainer.innerHTML = courses.map(course => `
+        <button type="button" class="course-tab ${course.id === currentHomeworkCourse ? 'active' : ''}"
+                data-course="${course.id}" onclick="switchHomeworkTab('${course.id}')">
+          ${course.icon} ${course.name}
+        </button>
+      `).join('');
+    }
+
+    // 切换作业标签
+    function switchHomeworkTab(courseId) {
+      currentHomeworkCourse = courseId;
+      renderHomeworkTabs();
+      renderHomework();
+    }
+
+    // 渲染作业列表
+    function renderHomework() {
+      const listContainer = document.getElementById('homeworkList');
+      const homework = loadHomework();
+      const courseHomework = homework.filter(h => h.courseId === currentHomeworkCourse);
+
+      if (courseHomework.length === 0) {
+        listContainer.innerHTML = `
+          <div class="homework-empty fade-in">
+            <span class="empty-icon">${getCourseById(currentHomeworkCourse)?.icon || '📚'}</span>
+            <p>暂无作业，点击下方按钮添加</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 按完成状态和截止日期排序
+      courseHomework.sort((a, b) => {
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+        return 0;
+      });
+
+      listContainer.innerHTML = courseHomework.map(hw => {
+        const dueStatus = getDueDateStatus(hw.dueDate);
+        const statusClass = hw.completed ? 'completed' :
+                          dueStatus === 'overdue' ? 'overdue' :
+                          dueStatus === 'today' ? 'today' : 'pending';
+        const statusText = hw.completed ? '✓ 已完成' :
+                         dueStatus === 'overdue' ? '⚠️ 已过期' :
+                         dueStatus === 'today' ? '📅 今天截止' :
+                         dueStatus === 'soon' ? '⏰ 即将截止' : '📋 待完成';
+
+        return `
+          <div class="homework-card fade-in ${hw.completed ? 'completed' : ''}">
+            <div class="homework-header">
+              <label class="homework-checkbox">
+                <input type="checkbox" ${hw.completed ? 'checked' : ''}
+                       onchange="handleToggleHomework('${hw.id}')">
+                <span class="checkmark"></span>
+              </label>
+              <span class="homework-status ${statusClass}">${statusText}</span>
+              ${hw.dueDate ? `<span class="homework-date">${hw.dueDate}</span>` : ''}
+            </div>
+            <h3 class="homework-title">${hw.title}</h3>
+            ${hw.description ? `<p class="homework-desc">${hw.description}</p>` : ''}
+            <div class="homework-actions">
+              <button type="button" class="homework-delete-btn" onclick="handleDeleteHomework('${hw.id}')">🗑️ 删除</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 获取日期状态
+    function getDueDateStatus(dueDate) {
+      if (!dueDate) return 'none';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(dueDate);
+      due.setHours(0, 0, 0, 0);
+      const diff = due.getTime() - today.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (days < 0) return 'overdue';
+      if (days === 0) return 'today';
+      if (days <= 3) return 'soon';
+      return 'future';
+    }
+
+    // 处理切换作业完成状态
+    function handleToggleHomework(homeworkId) {
+      toggleHomeworkComplete(homeworkId);
+      renderHomework();
+    }
+
+    // 处理删除作业
+    function handleDeleteHomework(homeworkId) {
+      deleteHomework(homeworkId);
+    }
+
+    // 关闭模态框
+    function closeHomeworkModal() {
+      document.getElementById('addHomeworkModal').style.display = 'none';
+    }
+
+    // 初始化作业页面
+    document.addEventListener('DOMContentLoaded', function() {
+      // 填充课程选择下拉框
+      const courseSelect = document.getElementById('homeworkCourse');
+      const courses = getCoursesArray();
+      courseSelect.innerHTML = courses.map(c =>
+        `<option value="${c.id}">${c.icon} ${c.name}</option>`
+      ).join('');
+
+      // 默认选择第一个课程
+      if (courses.length > 0) {
+        currentHomeworkCourse = courses[0].id;
+      }
+
+      // 渲染标签和作业
+      renderHomeworkTabs();
+      renderHomework();
+
+      // 添加作业按钮
+      document.getElementById('addHomeworkBtn').addEventListener('click', function() {
+        document.getElementById('homeworkCourse').value = currentHomeworkCourse;
+        document.getElementById('addHomeworkModal').style.display = 'flex';
+      });
+
+      // 表单提交
+      document.getElementById('addHomeworkForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = document.getElementById('homeworkTitle').value;
+        const courseId = document.getElementById('homeworkCourse').value;
+        const description = document.getElementById('homeworkDesc').value;
+        const dueDate = document.getElementById('homeworkDueDate').value;
+
+        addHomework(title, courseId, description, dueDate);
+        closeHomeworkModal();
+        renderHomework();
+        this.reset();
+      });
+
+      // 点击模态框外部关闭
+      document.getElementById('addHomeworkModal').addEventListener('click', function(e) {
+        if (e.target === this) closeHomeworkModal();
+      });
+    });
+  </script>
 </body>
 </html>
