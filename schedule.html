@@ -37,7 +37,8 @@
         <!-- 添加待办表单 -->
         <div class="todo-add-form fade-in">
           <input type="text" id="todoInput" class="todo-input" placeholder="添加新的待办事项...">
-          <input type="date" id="todoDueDate" class="todo-date-input">
+          <label for="todoDueDate" class="visually-hidden">截止日期</label>
+          <input type="date" id="todoDueDate" class="todo-date-input" title="请选择截止日期" placeholder="截止日期">
           <select id="todoCourse" class="todo-course-select">
             <option value="">无关联课程</option>
           </select>

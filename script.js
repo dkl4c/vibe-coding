@@ -101,6 +101,17 @@ function initNotes() {
 
   if (!textarea) return;
 
+  // 填充课程选择下拉框（如果尚未填充）
+  if (courseSelect && courseSelect.options.length <= 1) {
+    const courses = typeof getCoursesArray !== 'undefined' ? getCoursesArray() : [];
+    courses.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.id;
+      option.textContent = c.icon + ' ' + c.name;
+      courseSelect.appendChild(option);
+    });
+  }
+
   function getStorageKey(courseId) {
     return 'course_notes_' + courseId;
   }
