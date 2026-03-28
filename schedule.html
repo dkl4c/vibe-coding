@@ -37,8 +37,8 @@
         <!-- 添加待办表单 -->
         <div class="todo-add-form fade-in">
           <input type="text" id="todoInput" class="todo-input" placeholder="添加新的待办事项...">
-          <input type="date" id="todoDueDate" class="todo-date-input">
-          <select id="todoCourse" class="todo-course-select">
+          <input type="date" id="todoDueDate" class="todo-date-input" title="截止日期" placeholder="截止日期">
+          <select id="todoCourse" class="todo-course-select" title="关联课程">
             <option value="">无关联课程</option>
           </select>
           <button type="button" id="addTodoBtn" class="course-btn">添加</button>
@@ -66,7 +66,7 @@
         <!-- 周选择器 -->
         <div class="week-selector fade-in">
           <button type="button" id="prevWeekBtn" class="week-nav-btn">◀ 上一周</button>
-          <select id="weekSelect" class="week-select">
+          <select id="weekSelect" class="week-select" title="选择学习周次">
             <!-- 周选项将由 JavaScript 渲染 -->
           </select>
           <span id="weekDateRange" class="week-date-range"></span>
@@ -165,6 +165,32 @@
         <div class="form-actions">
           <button type="button" class="course-btn-secondary" onclick="closeTableItemModal()">取消</button>
           <button type="submit" class="course-btn">添加</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 编辑时间节次模态框 -->
+  <div id="editPeriodModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>编辑时间节次</h3>
+        <button type="button" class="modal-close" onclick="closePeriodModal()">&times;</button>
+      </div>
+      <form id="editPeriodForm" class="modal-form">
+        <input type="hidden" id="editPeriodId">
+        <div class="form-group">
+          <label for="editPeriodName">节次名称</label>
+          <input type="text" id="editPeriodName" placeholder="例如：1-2节">
+        </div>
+        <div class="form-group">
+          <label for="editPeriodTime">上课时间</label>
+          <input type="text" id="editPeriodTime" placeholder="例如：08:00-09:40">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="course-btn-delete" onclick="deletePeriod()">🗑️ 删除</button>
+          <button type="button" class="course-btn-secondary" onclick="closePeriodModal()">取消</button>
+          <button type="submit" class="course-btn">保存</button>
         </div>
       </form>
     </div>
@@ -358,9 +384,10 @@
 
     // ===== 课程表功能 =====
     const TABLE_ITEMS_KEY = 'course_table_items';
+    const PERIODS_KEY = 'course_periods';
     const FIRST_WEEK_MONDAY = new Date('2026-03-02'); // 第一周周一
 
-    const PERIODS = [
+    const DEFAULT_PERIODS = [
       { id: 0, name: '1-2节', time: '08:00-09:40' },
       { id: 1, name: '3-4节', time: '10:00-11:40' },
       { id: 2, name: '5-6节', time: '14:00-15:40' },
@@ -369,6 +396,17 @@
       { id: 5, name: '11-12节', time: '20:10-21:40' }
     ];
 
+    function getPeriods() {
+      const saved = localStorage.getItem(PERIODS_KEY);
+      if (saved) return JSON.parse(saved);
+      return DEFAULT_PERIODS;
+    }
+
+    function savePeriods(periods) {
+      localStorage.setItem(PERIODS_KEY, JSON.stringify(periods));
+    }
+
+    const PERIODS = getPeriods();
     const DAYS = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
 
     let currentWeekOffset = 0;
@@ -433,9 +471,10 @@
       const isOddWeek = weekNum % 2 === 1;
 
       let html = '';
-      PERIODS.forEach((period, pIndex) => {
+      const periods = getPeriods();
+      periods.forEach((period, pIndex) => {
         html += '<tr>';
-        html += `<td class="time-cell">
+        html += `<td class="time-cell clickable" onclick="openPeriodModal(${period.id})">
           <div class="period-name">${period.name}</div>
           <div class="period-time">${period.time}</div>
         </td>`;
@@ -537,6 +576,55 @@
       renderCourseTable();
     }
 
+    // 时间节次编辑
+    let editingPeriodId = null;
+
+    function openPeriodModal(periodId) {
+      editingPeriodId = periodId;
+      const periods = getPeriods();
+      const period = periods.find(p => p.id === periodId);
+      if (!period) return;
+      document.getElementById('editPeriodId').value = periodId;
+      document.getElementById('editPeriodName').value = period.name;
+      document.getElementById('editPeriodTime').value = period.time;
+      document.getElementById('editPeriodModal').style.display = 'flex';
+    }
+
+    function closePeriodModal() {
+      document.getElementById('editPeriodModal').style.display = 'none';
+      editingPeriodId = null;
+    }
+
+    function handleEditPeriod(e) {
+      e.preventDefault();
+      const periodId = parseInt(document.getElementById('editPeriodId').value);
+      const name = document.getElementById('editPeriodName').value.trim();
+      const time = document.getElementById('editPeriodTime').value.trim();
+      if (!name || !time) {
+        alert('请填写节次名称和时间');
+        return;
+      }
+      const periods = getPeriods();
+      const idx = periods.findIndex(p => p.id === periodId);
+      if (idx !== -1) {
+        periods[idx].name = name;
+        periods[idx].time = time;
+        savePeriods(periods);
+        closePeriodModal();
+        renderCourseTable();
+      }
+    }
+
+    function deletePeriod() {
+      if (!confirm('确定要删除这个时间节次吗？课程表中的课程项不会被删除。')) return;
+      const periodId = parseInt(document.getElementById('editPeriodId').value);
+      const periods = getPeriods();
+      const filtered = periods.filter(p => p.id !== periodId);
+      savePeriods(filtered);
+      closePeriodModal();
+      renderCourseTable();
+    }
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
       // 待办事项初始化
@@ -596,6 +684,12 @@
       document.getElementById('addTableItemForm').addEventListener('submit', handleAddTableItem);
       document.getElementById('addTableItemModal').addEventListener('click', function(e) {
         if (e.target === this) closeTableItemModal();
+      });
+
+      // 时间节次编辑
+      document.getElementById('editPeriodForm').addEventListener('submit', handleEditPeriod);
+      document.getElementById('editPeriodModal').addEventListener('click', function(e) {
+        if (e.target === this) closePeriodModal();
       });
     });
   </script>

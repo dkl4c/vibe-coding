@@ -166,12 +166,12 @@ function initNotes() {
 
       const tabName = tab.dataset.tab;
       if (tabName === 'edit') {
-        if (editorPanel) editorPanel.style.display = 'block';
-        if (previewPanel) previewPanel.style.display = 'none';
+        if (editorPanel) editorPanel.classList.remove('notes-editor-hidden');
+        if (previewPanel) previewPanel.classList.add('notes-preview-hidden');
       } else {
         renderPreview(textarea.value);
-        if (editorPanel) editorPanel.style.display = 'none';
-        if (previewPanel) previewPanel.style.display = 'block';
+        if (editorPanel) editorPanel.classList.add('notes-editor-hidden');
+        if (previewPanel) previewPanel.classList.remove('notes-preview-hidden');
       }
     });
   });

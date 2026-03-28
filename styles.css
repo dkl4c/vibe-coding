@@ -93,8 +93,8 @@ ul {
   right: 0;
   z-index: 100;
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 183, 197, 0.3);
 }
 
@@ -1516,6 +1516,10 @@ ul {
   height: 100%;
 }
 
+.notes-editor-hidden {
+  display: none;
+}
+
 .notes-textarea {
   width: 100%;
   min-height: 400px;
@@ -1539,6 +1543,10 @@ ul {
   padding: 25px;
   min-height: 400px;
   background: var(--bg-card);
+}
+
+.notes-preview-hidden {
+  display: none;
 }
 
 /* Markdown 渲染样式 */
@@ -2086,6 +2094,15 @@ ul {
   color: var(--mint-dark);
   font-weight: 500;
   width: 80px;
+}
+
+.time-cell.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.time-cell.clickable:hover {
+  background: rgba(152, 216, 200, 0.4);
 }
 
 .course-cell {

@@ -231,6 +231,13 @@ function openEditCourseModal(courseId) {
   document.getElementById('editCourseCategory').value = course.category || '';
   document.getElementById('editCourseStatus').value = course.status;
   document.getElementById('editCourseDesc').value = course.description || '';
+
+  // 显示/隐藏删除按钮（只有用户添加的课程可以删除）
+  const deleteBtn = document.getElementById('deleteCourseBtn');
+  if (deleteBtn) {
+    deleteBtn.style.display = course.isUserAdded ? 'inline-block' : 'none';
+  }
+
   document.getElementById('editCourseModal').style.display = 'flex';
 }
 
@@ -264,6 +271,26 @@ function handleEditCourse(e) {
 
 function closeEditCourseModal() {
   document.getElementById('editCourseModal').style.display = 'none';
+}
+
+/**
+ * 从编辑模态框删除课程
+ */
+function handleDeleteCourseFromEdit() {
+  const courseId = document.getElementById('editCourseId').value;
+  const course = getCourseById(courseId);
+  if (!course) return;
+
+  if (!course.isUserAdded) {
+    alert('默认课程不能删除');
+    return;
+  }
+
+  if (!confirm('确定要删除这门课程吗？此操作不可恢复。')) return;
+
+  deleteUserCourse(courseId);
+  renderCourseCards('coursesGrid');
+  closeEditCourseModal();
 }
 
 /**

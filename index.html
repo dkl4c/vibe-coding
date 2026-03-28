@@ -127,12 +127,12 @@
           <label>头像</label>
           <div class="avatar-edit-container">
             <div class="avatar-preview" id="avatarPreview">🌸</div>
-            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+            <input type="file" id="avatarInput" accept="image/*" class="hidden-input" title="选择头像图片">
             <button type="button" class="course-btn-secondary" onclick="document.getElementById('avatarInput').click()">上传图片</button>
           </div>
-          <div id="cropContainer" style="display: none; margin-top: 10px;">
-            <canvas id="cropCanvas" style="max-width: 100%; border: 1px solid #ddd;"></canvas>
-            <p style="font-size: 0.85rem; color: #666;">拖动选择裁剪区域</p>
+          <div id="cropContainer" class="crop-container-hidden">
+            <canvas id="cropCanvas" class="crop-canvas"></canvas>
+            <p class="crop-instruction">拖动选择裁剪区域</p>
           </div>
         </div>
         <div class="form-group">
@@ -197,6 +197,7 @@
           <textarea id="editCourseDesc" rows="3"></textarea>
         </div>
         <div class="form-actions">
+          <button type="button" id="deleteCourseBtn" class="course-btn-delete" onclick="handleDeleteCourseFromEdit()">🗑️ 删除</button>
           <button type="button" class="course-btn-secondary" onclick="closeEditCourseModal()">取消</button>
           <button type="submit" class="course-btn">保存</button>
         </div>
