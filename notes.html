@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
   <!-- 樱花飘落容器 -->
@@ -190,24 +189,6 @@
                 <button type="submit" class="course-btn">添加</button>
               </div>
             </form>
-          </div>
-        </div>
-
-        <!-- PDF 预览模态框 -->
-        <div id="pdfPreviewModal" class="modal pdf-preview-modal">
-          <div class="modal-content pdf-preview-content">
-            <div class="modal-header">
-              <h3 id="pdfPreviewTitle">PDF 预览</h3>
-              <button type="button" class="modal-close" onclick="closePdfPreview()">&times;</button>
-            </div>
-            <div class="pdf-viewer-container">
-              <canvas id="pdfCanvas"></canvas>
-            </div>
-            <div class="pdf-controls">
-              <button type="button" id="pdfPrevPage" class="pdf-btn">◀ 上一页</button>
-              <span id="pdfPageInfo">第 1 页 / 共 1 页</span>
-              <button type="button" id="pdfNextPage" class="pdf-btn">下一页 ▶</button>
-            </div>
           </div>
         </div>
       </div>
@@ -536,8 +517,10 @@
       if (!file) return;
 
       if (file.type === 'pdf') {
-        // 使用 PDF.js 在模态框中预览
-        openPdfPreviewModal(file);
+        // 显示 PDF 信息和下载链接
+        const categoryFolder = file.fileCategory || '课程课件';
+        const githubUrl = `https://github.com/mako-kawai/vibe-coding/tree/main/${file.courseId}/${categoryFolder}`;
+        alert(`📕 ${file.filename}\n\n文件已记录，请前往 GitHub 上传：\n${githubUrl}\n\n上传后点击"在新窗口打开"查看。`);
         return;
       }
 
@@ -555,108 +538,6 @@
       document.getElementById('notesEditor').classList.add('notes-editor-hidden');
       document.getElementById('notesPreview').classList.remove('notes-preview-hidden');
     }
-
-    // PDF 预览功能
-    let pdfDoc = null;
-    let pdfPageNum = 1;
-    let pdfRendering = false;
-    let pdfScale = 1.0;
-
-    function openPdfPreviewModal(file) {
-      document.getElementById('pdfPreviewTitle').textContent = file.filename;
-      document.getElementById('pdfPageInfo').textContent = '加载中...';
-      document.getElementById('pdfCanvas').style.display = 'none';
-      document.getElementById('pdfPreviewModal').style.display = 'flex';
-
-      // 从 GitHub 加载 PDF
-      const categoryFolder = file.fileCategory || '课程课件';
-      // 尝试从 GitHub Pages 加载
-      const pdfUrl = `https://mako-kawai.github.io/vibe-coding/${file.courseId}/${categoryFolder}/${encodeURIComponent(file.filename)}`;
-
-      // 也保存 URL 以便外部打开
-      window.currentPdfUrl = pdfUrl;
-
-      pdfDoc = null;
-      pdfPageNum = 1;
-      pdfScale = 1.0;
-
-      loadPdf(pdfUrl);
-    }
-
-    function loadPdf(url) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-      pdfjsLib.getDocument(url).promise.then(function(doc) {
-        pdfDoc = doc;
-        pdfPageNum = 1;
-        document.getElementById('pdfPageInfo').textContent = `第 1 页 / 共 ${pdfDoc.numPages} 页`;
-        renderPdfPage();
-      }).catch(function(error) {
-        console.error('PDF 加载失败:', error);
-        document.getElementById('pdfPageInfo').textContent = 'PDF 加载失败，请尝试：';
-        document.getElementById('pdfCanvas').style.display = 'none';
-        // 显示外部链接选项
-        if (window.currentPdfUrl) {
-          const container = document.querySelector('.pdf-viewer-container');
-          container.innerHTML = `
-            <div style="text-align:center;padding:40px;">
-              <p style="color:#ff6b6b;margin-bottom:20px;">⚠️ 无法直接预览此 PDF</p>
-              <p style="margin-bottom:20px;">请尝试以下方式：</p>
-              <a href="${window.currentPdfUrl}" target="_blank" class="course-btn" style="display:inline-block;margin-bottom:10px;">🌐 在新窗口打开</a>
-              <p style="margin-top:20px;font-size:0.85rem;color:#666;">提示：将 PDF 上传到 GitHub 对应文件夹后等待几分钟即可预览</p>
-            </div>
-          `;
-        }
-      });
-    }
-
-    function renderPdfPage() {
-      if (!pdfDoc || pdfRendering) return;
-      pdfRendering = true;
-
-      pdfDoc.getPage(pdfPageNum).then(function(page) {
-        const canvas = document.getElementById('pdfCanvas');
-        canvas.style.display = 'block';
-        const context = canvas.getContext('2d');
-        const viewport = page.getViewport({ scale: pdfScale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        page.render({
-          canvasContext: context,
-          viewport: viewport
-        }).promise.then(function() {
-          pdfRendering = false;
-          document.getElementById('pdfPageInfo').textContent = `第 ${pdfPageNum} 页 / 共 ${pdfDoc.numPages} 页`;
-          // 恢复容器样式
-          document.querySelector('.pdf-viewer-container').innerHTML = '';
-          document.querySelector('.pdf-viewer-container').appendChild(canvas);
-        });
-      });
-    }
-
-    function closePdfPreview() {
-      document.getElementById('pdfPreviewModal').style.display = 'none';
-      pdfDoc = null;
-      // 恢复容器
-      const container = document.querySelector('.pdf-viewer-container');
-      container.innerHTML = '<canvas id="pdfCanvas"></canvas>';
-    }
-
-    // PDF 翻页事件
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('pdfPrevPage').addEventListener('click', function() {
-        if (pdfPageNum <= 1) return;
-        pdfPageNum--;
-        renderPdfPage();
-      });
-
-      document.getElementById('pdfNextPage').addEventListener('click', function() {
-        if (!pdfDoc || pdfPageNum >= pdfDoc.numPages) return;
-        pdfPageNum++;
-        renderPdfPage();
-      });
-    });
 
     // 删除文件
     function deleteUploadedFile(fileId) {
