@@ -213,10 +213,19 @@ function initNotes() {
   });
 }
 
+// ===== 背景图初始化（支持自定义背景）=====
+function initGlobalBackground() {
+  const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+  if (userSettings.bgImage) {
+    document.body.style.backgroundImage = `url('${userSettings.bgImage}')`;
+  }
+}
+
 // ===== 初始化 =====
 document.addEventListener('DOMContentLoaded', () => {
   createSakura();
   handleScrollAnimation();
   handleNavHighlight();
   initNotes();
+  initGlobalBackground();
 });
