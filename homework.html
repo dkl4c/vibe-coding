@@ -38,6 +38,21 @@
           <!-- 标签将由 JavaScript 渲染 -->
         </div>
 
+        <!-- 截止日期筛选 -->
+        <div class="homework-status-filters fade-in" id="homeworkStatusFilters">
+          <button type="button" class="filter-btn active" data-status="all" onclick="filterHomeworkByStatus('all')">全部</button>
+          <button type="button" class="filter-btn" data-status="overdue" onclick="filterHomeworkByStatus('overdue')">⚠️ 已过期</button>
+          <button type="button" class="filter-btn" data-status="today" onclick="filterHomeworkByStatus('today')">📅 今天截止</button>
+          <button type="button" class="filter-btn" data-status="upcoming" onclick="filterHomeworkByStatus('upcoming')">⏰ 即将截止</button>
+          <button type="button" class="filter-btn" data-status="pending" onclick="filterHomeworkByStatus('pending')">📋 待完成</button>
+          <button type="button" class="filter-btn" data-status="completed" onclick="filterHomeworkByStatus('completed')">✅ 已完成</button>
+        </div>
+
+        <!-- 作业统计 -->
+        <div class="homework-stats fade-in" id="homeworkStats">
+          <span id="homeworkCountText">共 0 项作业</span>
+        </div>
+
         <!-- 作业列表 -->
         <div id="homeworkList" class="homework-list">
           <!-- 作业卡片将由 JavaScript 渲染 -->
@@ -99,6 +114,7 @@
     // ===== 作业管理 =====
     const HOMEWORK_KEY = 'course_homework';
     let currentHomeworkCourse = '';
+    let currentHomeworkStatus = 'all';
 
     // 加载作业
     function loadHomework() {
@@ -108,6 +124,46 @@
     // 保存作业
     function saveHomework(homework) {
       localStorage.setItem(HOMEWORK_KEY, JSON.stringify(homework));
+    }
+
+    // 按状态筛选作业
+    function filterHomeworkByStatus(status) {
+      currentHomeworkStatus = status;
+      document.querySelectorAll('.homework-status-filters .filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.status === status);
+      });
+      renderHomework();
+    }
+
+    // 获取作业状态
+    function getHomeworkStatus(hw) {
+      if (hw.completed) return 'completed';
+      if (!hw.dueDate) return 'pending';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(hw.dueDate);
+      due.setHours(0, 0, 0, 0);
+      const diff = due.getTime() - today.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (days < 0) return 'overdue';
+      if (days === 0) return 'today';
+      if (days <= 3) return 'upcoming';
+      return 'pending';
+    }
+
+    // 获取剩余天数文字
+    function getDueCountdown(dueDate) {
+      if (!dueDate) return '';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(dueDate);
+      due.setHours(0, 0, 0, 0);
+      const diff = due.getTime() - today.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (days < 0) return `已过期 ${Math.abs(days)} 天`;
+      if (days === 0) return '今天截止！';
+      if (days === 1) return '明天截止';
+      return `${days} 天后截止`;
     }
 
     // 添加作业
@@ -200,7 +256,22 @@
     function renderHomework() {
       const listContainer = document.getElementById('homeworkList');
       const homework = loadHomework();
-      const courseHomework = homework.filter(h => h.courseId === currentHomeworkCourse);
+      let courseHomework = homework.filter(h => h.courseId === currentHomeworkCourse);
+
+      // 按状态筛选
+      if (currentHomeworkStatus !== 'all') {
+        courseHomework = courseHomework.filter(hw => {
+          const status = getHomeworkStatus(hw);
+          return status === currentHomeworkStatus;
+        });
+      }
+
+      // 更新统计
+      const allCourseHomework = homework.filter(h => h.courseId === currentHomeworkCourse);
+      const pendingCount = allCourseHomework.filter(hw => !hw.completed).length;
+      const completedCount = allCourseHomework.filter(hw => hw.completed).length;
+      document.getElementById('homeworkCountText').textContent =
+        `共 ${allCourseHomework.length} 项作业（${pendingCount} 待完成，${completedCount} 已完成）`;
 
       if (courseHomework.length === 0) {
         listContainer.innerHTML = `
@@ -220,14 +291,13 @@
       });
 
       listContainer.innerHTML = courseHomework.map(hw => {
-        const dueStatus = getDueDateStatus(hw.dueDate);
-        const statusClass = hw.completed ? 'completed' :
-                          dueStatus === 'overdue' ? 'overdue' :
-                          dueStatus === 'today' ? 'today' : 'pending';
+        const hwStatus = getHomeworkStatus(hw);
+        const statusClass = hwStatus;
         const statusText = hw.completed ? '✓ 已完成' :
-                         dueStatus === 'overdue' ? '⚠️ 已过期' :
-                         dueStatus === 'today' ? '📅 今天截止' :
-                         dueStatus === 'soon' ? '⏰ 即将截止' : '📋 待完成';
+                         hwStatus === 'overdue' ? '⚠️ 已过期' :
+                         hwStatus === 'today' ? '📅 今天截止' :
+                         hwStatus === 'upcoming' ? '⏰ 即将截止' : '📋 待完成';
+        const countdown = getDueCountdown(hw.dueDate);
 
         return `
           <div class="homework-card ${hw.completed ? 'completed' : ''}">
@@ -242,6 +312,7 @@
             </div>
             <h3 class="homework-title">${hw.title}</h3>
             ${hw.description ? `<p class="homework-desc">${hw.description}</p>` : ''}
+            ${countdown ? `<div class="homework-countdown">${countdown}</div>` : ''}
             <div class="homework-actions">
               <button type="button" class="homework-delete-btn" onclick="handleDeleteHomework('${hw.id}')">🗑️ 删除</button>
             </div>

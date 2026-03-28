@@ -50,6 +50,17 @@
         </div>
         <input type="file" id="fileInput" accept=".md,.txt,.pdf" class="file-input-hidden" title="选择文件上传">
 
+        <!-- 笔记标签 -->
+        <div class="notes-tags-section fade-in">
+          <div class="tags-header">
+            <span class="tags-label">🏷️ 笔记标签</span>
+            <button type="button" class="tags-add-btn" onclick="openAddTagModal()">➕ 添加标签</button>
+          </div>
+          <div class="tags-list" id="tagsList">
+            <!-- 标签将由 JavaScript 渲染 -->
+          </div>
+        </div>
+
         <div class="notes-tabs fade-in">
           <button type="button" class="notes-tab active" data-tab="edit">✏️ 编辑</button>
           <button type="button" class="notes-tab" data-tab="preview">👁️ 预览</button>
@@ -94,9 +105,91 @@
 
         <!-- 已上传文件列表 -->
         <div class="uploaded-files-section fade-in">
-          <h3 class="uploaded-files-title">📁 已上传文件</h3>
+          <div class="files-header">
+            <h3 class="uploaded-files-title">📁 已上传文件</h3>
+            <button type="button" id="addFolderBtn" class="notes-btn notes-btn-small">📂 新建文件夹</button>
+          </div>
+
+          <!-- 文件夹导航 -->
+          <div class="folder-nav" id="folderNav">
+            <button type="button" class="folder-btn active" data-folder="" onclick="filterByFolder('')">全部</button>
+          </div>
+
           <div class="uploaded-files-list" id="uploadedFilesList">
             <!-- 文件列表将由 JavaScript 渲染 -->
+          </div>
+        </div>
+
+        <!-- 新建文件夹模态框 -->
+        <div id="addFolderModal" class="modal">
+          <div class="modal-content modal-content-sm">
+            <div class="modal-header">
+              <h3>新建文件夹</h3>
+              <button type="button" class="modal-close" onclick="closeAddFolderModal()">&times;</button>
+            </div>
+            <form id="addFolderForm" class="modal-form">
+              <div class="form-group">
+                <label for="folderName">文件夹名称</label>
+                <input type="text" id="folderName" required placeholder="例如：第一章、复习资料">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="course-btn-secondary" onclick="closeAddFolderModal()">取消</button>
+                <button type="submit" class="course-btn">创建</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 移动到文件夹模态框 -->
+        <div id="moveFileModal" class="modal">
+          <div class="modal-content modal-content-sm">
+            <div class="modal-header">
+              <h3>移动到文件夹</h3>
+              <button type="button" class="modal-close" onclick="closeMoveFileModal()">&times;</button>
+            </div>
+            <div class="modal-form">
+              <div class="form-group">
+                <label>选择目标文件夹</label>
+                <div id="folderSelectList" class="folder-select-list">
+                  <!-- 文件夹选项 -->
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="course-btn-secondary" onclick="closeMoveFileModal()">取消</button>
+                <button type="button" class="course-btn" onclick="confirmMoveFile()">移动</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 添加标签模态框 -->
+        <div id="addTagModal" class="modal">
+          <div class="modal-content modal-content-sm">
+            <div class="modal-header">
+              <h3>添加笔记标签</h3>
+              <button type="button" class="modal-close" onclick="closeAddTagModal()">&times;</button>
+            </div>
+            <form id="addTagForm" class="modal-form">
+              <div class="form-group">
+                <label for="tagName">标签名称</label>
+                <input type="text" id="tagName" required placeholder="例如：重点、复习、公式">
+              </div>
+              <div class="form-group">
+                <label for="tagColor">标签颜色</label>
+                <select id="tagColor">
+                  <option value="#FFB7C5">🌸 粉色</option>
+                  <option value="#98D8C8">🌿 绿色</option>
+                  <option value="#FFD700">⭐ 金色</option>
+                  <option value="#87CEEB">🌊 蓝色</option>
+                  <option value="#DDA0DD">🍇 紫色</option>
+                  <option value="#FFA07A">🦐 橙色</option>
+                </select>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="course-btn-secondary" onclick="closeAddTagModal()">取消</button>
+                <button type="submit" class="course-btn">添加</button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -132,11 +225,148 @@
   <script src="courses.js"></script>
   <script src="script.js"></script>
   <script>
-    // ===== 文件上传功能 =====
+    // ===== 文件夹管理 =====
+    const FILE_FOLDERS_KEY = 'file_folders';
+    const NOTES_TAGS_KEY = 'notes_tags';
     const UPLOADED_FILES_KEY = 'uploaded_files_meta';
+    let currentFolder = '';
     let pdfDoc = null;
     let pdfPageNum = 1;
     let pdfRendering = false;
+    let movingFileId = null;
+
+    // 加载文件夹列表
+    function loadFileFolders() {
+      return JSON.parse(localStorage.getItem(FILE_FOLDERS_KEY) || '[]');
+    }
+
+    // 保存文件夹列表
+    function saveFileFolders(folders) {
+      localStorage.setItem(FILE_FOLDERS_KEY, JSON.stringify(folders));
+    }
+
+    // 渲染文件夹导航
+    function renderFolderNav() {
+      const nav = document.getElementById('folderNav');
+      const folders = loadFileFolders();
+      const currentCourse = document.getElementById('courseSelect').value;
+
+      // 只显示当前课程的文件夹
+      const courseFolders = folders.filter(f => f.courseId === currentCourse);
+
+      let html = `<button type="button" class="folder-btn ${currentFolder === '' ? 'active' : ''}" data-folder="" onclick="filterByFolder('')">📂 全部</button>`;
+
+      courseFolders.forEach(folder => {
+        html += `<button type="button" class="folder-btn ${currentFolder === folder.id ? 'active' : ''}" data-folder="${folder.id}" onclick="filterByFolder('${folder.id}')">📁 ${folder.name}</button>`;
+      });
+
+      nav.innerHTML = html;
+    }
+
+    // ===== 笔记标签管理 =====
+    // 加载笔记标签
+    function loadNotesTags() {
+      return JSON.parse(localStorage.getItem(NOTES_TAGS_KEY) || '[]');
+    }
+
+    // 保存笔记标签
+    function saveNotesTags(tags) {
+      localStorage.setItem(NOTES_TAGS_KEY, JSON.stringify(tags));
+    }
+
+    // 获取当前课程的标签
+    function getCourseTags() {
+      const tags = loadNotesTags();
+      const currentCourse = document.getElementById('courseSelect').value;
+      return tags.filter(t => t.courseId === currentCourse);
+    }
+
+    // 渲染标签列表
+    function renderTagsList() {
+      const container = document.getElementById('tagsList');
+      const tags = getCourseTags();
+
+      if (tags.length === 0) {
+        container.innerHTML = '<span class="tags-empty">暂无标签，添加标签来整理笔记</span>';
+        return;
+      }
+
+      container.innerHTML = tags.map(tag => `
+        <span class="tag-item" style="background-color: ${tag.color}20; border-color: ${tag.color};">
+          <span class="tag-name">${tag.name}</span>
+          <button type="button" class="tag-delete" onclick="deleteTag('${tag.id}')">×</button>
+        </span>
+      `).join('');
+    }
+
+    // 打开添加标签模态框
+    function openAddTagModal() {
+      document.getElementById('tagName').value = '';
+      document.getElementById('tagColor').value = '#FFB7C5';
+      document.getElementById('addTagModal').style.display = 'flex';
+    }
+
+    // 关闭添加标签模态框
+    function closeAddTagModal() {
+      document.getElementById('addTagModal').style.display = 'none';
+    }
+
+    // 创建标签
+    function createTag(name, color) {
+      const tags = loadNotesTags();
+      const currentCourse = document.getElementById('courseSelect').value;
+      tags.push({
+        id: 'tag_' + Date.now(),
+        name,
+        color,
+        courseId: currentCourse,
+        createdAt: new Date().toISOString()
+      });
+      saveNotesTags(tags);
+      renderTagsList();
+    }
+
+    // 删除标签
+    function deleteTag(tagId) {
+      if (!confirm('确定要删除这个标签吗？')) return;
+      const tags = loadNotesTags();
+      const filtered = tags.filter(t => t.id !== tagId);
+      saveNotesTags(filtered);
+      renderTagsList();
+    }
+
+    // 按文件夹筛选
+    function filterByFolder(folderId) {
+      currentFolder = folderId;
+      renderFolderNav();
+      renderUploadedFiles();
+    }
+
+    // 打开新建文件夹模态框
+    function openAddFolderModal() {
+      document.getElementById('folderName').value = '';
+      document.getElementById('addFolderModal').style.display = 'flex';
+    }
+
+    // 关闭新建文件夹模态框
+    function closeAddFolderModal() {
+      document.getElementById('addFolderModal').style.display = 'none';
+    }
+
+    // 创建文件夹
+    function createFolder(name) {
+      const folders = loadFileFolders();
+      const currentCourse = document.getElementById('courseSelect').value;
+      const newFolder = {
+        id: 'folder_' + Date.now(),
+        name: name,
+        courseId: currentCourse,
+        createdAt: new Date().toISOString()
+      };
+      folders.push(newFolder);
+      saveFileFolders(folders);
+      renderFolderNav();
+    }
 
     // 加载已上传文件列表
     function loadUploadedFilesMeta() {
@@ -153,22 +383,35 @@
       const list = document.getElementById('uploadedFilesList');
       const files = loadUploadedFilesMeta();
       const currentCourse = document.getElementById('courseSelect').value;
-      const courseFiles = files.filter(f => f.courseId === currentCourse);
+
+      let courseFiles = files.filter(f => f.courseId === currentCourse);
+
+      // 按文件夹筛选
+      if (currentFolder !== '') {
+        courseFiles = courseFiles.filter(f => f.folderId === currentFolder);
+      }
 
       if (courseFiles.length === 0) {
         list.innerHTML = '<div class="uploaded-files-empty">暂无上传文件</div>';
         return;
       }
 
-      list.innerHTML = courseFiles.map(f => `
+      list.innerHTML = courseFiles.map(f => {
+        const folders = loadFileFolders();
+        const folder = folders.find(fl => fl.id === f.folderId);
+        return `
         <div class="uploaded-file-item">
           <span class="file-icon">${getFileIcon(f.type)}</span>
-          <span class="file-name">${f.filename}</span>
+          <div class="file-info">
+            <span class="file-name">${f.filename}</span>
+            ${folder ? `<span class="file-folder-tag">📁 ${folder.name}</span>` : ''}
+          </div>
           <span class="file-date">${new Date(f.uploadDate).toLocaleDateString()}</span>
           <button type="button" class="file-action-btn" onclick="previewFile('${f.id}')">预览</button>
+          <button type="button" class="file-action-btn" onclick="openMoveFileModal('${f.id}')">移动</button>
           <button type="button" class="file-action-btn file-delete-btn" onclick="deleteUploadedFile('${f.id}')">删除</button>
         </div>
-      `).join('');
+      `}).join('');
     }
 
     // 获取文件图标
@@ -176,6 +419,49 @@
       if (type === 'pdf') return '📕';
       if (type === 'md') return '📝';
       return '📄';
+    }
+
+    // 打开移动文件模态框
+    function openMoveFileModal(fileId) {
+      movingFileId = fileId;
+      const folders = loadFileFolders();
+      const currentCourse = document.getElementById('courseSelect').value;
+      const courseFolders = folders.filter(f => f.courseId === currentCourse);
+
+      const selectList = document.getElementById('folderSelectList');
+      if (courseFolders.length === 0) {
+        selectList.innerHTML = '<p class="text-muted">暂无文件夹，请先创建文件夹</p>';
+      } else {
+        selectList.innerHTML = courseFolders.map(f => `
+          <label class="folder-option">
+            <input type="radio" name="targetFolder" value="${f.id}"> 📁 ${f.name}
+          </label>
+        `).join('');
+      }
+
+      document.getElementById('moveFileModal').style.display = 'flex';
+    }
+
+    // 关闭移动文件模态框
+    function closeMoveFileModal() {
+      document.getElementById('moveFileModal').style.display = 'none';
+      movingFileId = null;
+    }
+
+    // 确认移动文件
+    function confirmMoveFile() {
+      if (!movingFileId) return;
+      const selected = document.querySelector('input[name="targetFolder"]:checked');
+      const targetFolder = selected ? selected.value : '';
+
+      const files = loadUploadedFilesMeta();
+      const file = files.find(f => f.id === movingFileId);
+      if (file) {
+        file.folderId = targetFolder;
+        saveUploadedFilesMeta(files);
+        renderUploadedFiles();
+      }
+      closeMoveFileModal();
     }
 
     // 处理文件上传
@@ -193,6 +479,7 @@
           id: 'file_' + Date.now(),
           filename: file.name,
           courseId,
+          folderId: currentFolder,
           type: extension === 'pdf' ? 'pdf' : (extension === 'md' ? 'md' : 'txt'),
           uploadDate: new Date().toISOString(),
           content: extension !== 'pdf' ? e.target.result : null
@@ -218,6 +505,7 @@
           id: 'file_' + Date.now(),
           filename: file.name,
           courseId,
+          folderId: currentFolder,
           type: 'pdf',
           uploadDate: new Date().toISOString()
         };
@@ -286,8 +574,22 @@
         if (courseSelect) courseSelect.value = courseParam;
       }
 
-      // 渲染上传文件列表
+      // 渲染文件夹导航和文件列表
+      renderFolderNav();
       renderUploadedFiles();
+
+      // 新建文件夹按钮
+      document.getElementById('addFolderBtn').addEventListener('click', openAddFolderModal);
+
+      // 新建文件夹表单
+      document.getElementById('addFolderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('folderName').value.trim();
+        if (name) {
+          createFolder(name);
+          closeAddFolderModal();
+        }
+      });
 
       // 文件上传按钮事件
       document.getElementById('uploadFileBtn').addEventListener('click', function() {
@@ -296,10 +598,29 @@
 
       document.getElementById('fileInput').addEventListener('change', handleFileUpload);
 
-      // 课程切换时刷新文件列表
+      // 渲染标签列表
+      renderTagsList();
+
+      // 添加标签表单
+      document.getElementById('addTagForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('tagName').value.trim();
+        const color = document.getElementById('tagColor').value;
+        if (name) {
+          createTag(name, color);
+          closeAddTagModal();
+        }
+      });
+
+      // 课程切换时刷新文件夹导航、标签和文件列表
       const courseSelect = document.getElementById('courseSelect');
       if (courseSelect) {
-        courseSelect.addEventListener('change', renderUploadedFiles);
+        courseSelect.addEventListener('change', function() {
+          currentFolder = '';
+          renderFolderNav();
+          renderTagsList();
+          renderUploadedFiles();
+        });
       }
     });
   </script>

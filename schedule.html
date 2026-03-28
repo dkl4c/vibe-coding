@@ -81,6 +81,26 @@
           <label><input type="radio" name="weekType" value="even"> 双周</label>
         </div>
 
+        <!-- 学期进度条 -->
+        <div class="semester-progress fade-in" id="semesterProgress">
+          <div class="progress-info">
+            <span class="progress-label">📊 学期进度</span>
+            <span class="progress-text" id="progressText">第 1 周 / 共 20 周</span>
+            <button type="button" class="progress-settings-btn" onclick="openSemesterSettings()">⚙️ 设置</button>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <!-- 本周概览 -->
+        <div class="week-overview fade-in" id="weekOverview">
+          <h3 class="overview-title">📋 本周概览</h3>
+          <div class="overview-content" id="overviewContent">
+            <!-- 概览内容由 JavaScript 渲染 -->
+          </div>
+        </div>
+
         <!-- 课程表 -->
         <div class="table-wrapper fade-in">
           <table class="course-table" id="courseTable">
@@ -190,6 +210,30 @@
         <div class="form-actions">
           <button type="button" class="course-btn-delete" onclick="deletePeriod()">🗑️ 删除</button>
           <button type="button" class="course-btn-secondary" onclick="closePeriodModal()">取消</button>
+          <button type="submit" class="course-btn">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 学期设置模态框 -->
+  <div id="semesterSettingsModal" class="modal">
+    <div class="modal-content modal-content-sm">
+      <div class="modal-header">
+        <h3>学期设置</h3>
+        <button type="button" class="modal-close" onclick="closeSemesterSettings()">&times;</button>
+      </div>
+      <form id="semesterSettingsForm" class="modal-form">
+        <div class="form-group">
+          <label for="semesterStartDate">学期开始日期</label>
+          <input type="date" id="semesterStartDate" required>
+        </div>
+        <div class="form-group">
+          <label for="semesterTotalWeeks">学期总周数</label>
+          <input type="number" id="semesterTotalWeeks" min="1" max="30" value="20" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="course-btn-secondary" onclick="closeSemesterSettings()">取消</button>
           <button type="submit" class="course-btn">保存</button>
         </div>
       </form>
@@ -385,7 +429,22 @@
     // ===== 课程表功能 =====
     const TABLE_ITEMS_KEY = 'course_table_items';
     const PERIODS_KEY = 'course_periods';
-    const FIRST_WEEK_MONDAY = new Date('2026-03-02'); // 第一周周一
+    const SEMESTER_KEY = 'semester_settings';
+
+    const DEFAULT_SEMESTER = {
+      startDate: '2026-03-02',
+      totalWeeks: 20
+    };
+
+    function getSemesterSettings() {
+      const saved = localStorage.getItem(SEMESTER_KEY);
+      if (saved) return JSON.parse(saved);
+      return DEFAULT_SEMESTER;
+    }
+
+    function saveSemesterSettings(settings) {
+      localStorage.setItem(SEMESTER_KEY, JSON.stringify(settings));
+    }
 
     const DEFAULT_PERIODS = [
       { id: 0, name: '1-2节', time: '08:00-09:40' },
@@ -430,7 +489,8 @@
     }
 
     function getWeekStartDate(weekOffset) {
-      const d = new Date(FIRST_WEEK_MONDAY);
+      const semester = getSemesterSettings();
+      const d = new Date(semester.startDate);
       d.setDate(d.getDate() + weekOffset * 7);
       return d;
     }
@@ -625,6 +685,92 @@
       renderCourseTable();
     }
 
+    // 学期设置
+    function openSemesterSettings() {
+      const semester = getSemesterSettings();
+      document.getElementById('semesterStartDate').value = semester.startDate;
+      document.getElementById('semesterTotalWeeks').value = semester.totalWeeks;
+      document.getElementById('semesterSettingsModal').style.display = 'flex';
+    }
+
+    function closeSemesterSettings() {
+      document.getElementById('semesterSettingsModal').style.display = 'none';
+    }
+
+    function handleSemesterSettings(e) {
+      e.preventDefault();
+      const startDate = document.getElementById('semesterStartDate').value;
+      const totalWeeks = parseInt(document.getElementById('semesterTotalWeeks').value);
+      saveSemesterSettings({ startDate, totalWeeks });
+      closeSemesterSettings();
+      renderWeekSelect();
+      updateWeekDateRange();
+      updateSemesterProgress();
+      renderWeekOverview();
+      renderCourseTable();
+    }
+
+    // 学期进度更新
+    function updateSemesterProgress() {
+      const semester = getSemesterSettings();
+      const weekNum = getWeekNumber(currentWeekOffset);
+      const totalWeeks = semester.totalWeeks;
+      const percent = Math.min(100, Math.max(0, (weekNum / totalWeeks) * 100));
+
+      document.getElementById('progressText').textContent = `第 ${weekNum} 周 / 共 ${totalWeeks} 周`;
+      document.getElementById('progressFill').style.width = percent + '%';
+    }
+
+    // 本周概览渲染
+    function renderWeekOverview() {
+      const container = document.getElementById('overviewContent');
+      const items = loadTableItems();
+      const semester = getSemesterSettings();
+      const weekNum = getWeekNumber(currentWeekOffset);
+      const isOddWeek = weekNum % 2 === 1;
+
+      // 获取本周每天的课程
+      const weekCourses = [];
+      for (let d = 0; d < 7; d++) {
+        const dayCourses = items.filter(item => {
+          if (item.day != d) return false;
+          if (item.weekType === 'all') return true;
+          if (item.weekType === 'odd') return isOddWeek;
+          if (item.weekType === 'even') return !isOddWeek;
+          return true;
+        });
+        if (dayCourses.length > 0) {
+          weekCourses.push({ day: DAYS[d], courses: dayCourses });
+        }
+      }
+
+      if (weekCourses.length === 0) {
+        container.innerHTML = '<p class="overview-empty">本周暂无课程安排</p>';
+        return;
+      }
+
+      let html = '<div class="overview-list">';
+      weekCourses.forEach(({ day, courses }) => {
+        html += `<div class="overview-day">
+          <div class="overview-day-name">${day}</div>
+          <div class="overview-day-courses">`;
+        courses.forEach(item => {
+          const course = getCourseById(item.courseId);
+          const period = getPeriods().find(p => p.id === item.period);
+          const periodName = period ? period.name : '';
+          const courseName = course ? `${course.icon} ${course.name}` : item.courseName || '未知课程';
+          html += `<div class="overview-course-item">
+            <span class="overview-period">${periodName}</span>
+            <span class="overview-name">${courseName}</span>
+            ${item.location ? `<span class="overview-location">📍${item.location}</span>` : ''}
+          </div>`;
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
       // 待办事项初始化
@@ -691,6 +837,16 @@
       document.getElementById('editPeriodModal').addEventListener('click', function(e) {
         if (e.target === this) closePeriodModal();
       });
+
+      // 学期设置
+      document.getElementById('semesterSettingsForm').addEventListener('submit', handleSemesterSettings);
+      document.getElementById('semesterSettingsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeSemesterSettings();
+      });
+
+      // 初始化学期进度和本周概览
+      updateSemesterProgress();
+      renderWeekOverview();
     });
   </script>
 </body>

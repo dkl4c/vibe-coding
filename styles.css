@@ -687,6 +687,52 @@ ul {
   gap: 20px;
 }
 
+/* 作业状态筛选 */
+.homework-status-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.homework-status-filters .filter-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--mint-green);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--mint-dark);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.homework-status-filters .filter-btn:hover,
+.homework-status-filters .filter-btn.active {
+  background: var(--mint-green);
+  color: white;
+}
+
+/* 作业统计 */
+.homework-stats {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background: rgba(255, 183, 197, 0.1);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* 作业倒计时 */
+.homework-countdown {
+  font-size: 0.85rem;
+  color: var(--sakura-dark);
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  background: rgba(255, 183, 197, 0.15);
+  border-radius: 5px;
+  display: inline-block;
+}
+
 .homework-card {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -1450,6 +1496,87 @@ ul {
   gap: 10px;
 }
 
+/* 笔记标签 */
+.notes-tags-section {
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.tags-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tags-label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.tags-add-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--sakura-pink);
+  border-radius: 15px;
+  background: transparent;
+  color: var(--sakura-pink);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tags-add-btn:hover {
+  background: var(--sakura-pink);
+  color: white;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tags-empty {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+  transform: translateY(-1px);
+}
+
+.tag-name {
+  color: var(--text-dark);
+}
+
+.tag-delete {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.tag-delete:hover {
+  color: #ff6b6b;
+}
+
 .notes-tabs {
   display: flex;
   gap: 10px;
@@ -2210,6 +2337,130 @@ ul {
   accent-color: var(--sakura-pink);
 }
 
+/* 学期进度条 */
+.semester-progress {
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.progress-label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.progress-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.progress-settings-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--mint-green);
+  border-radius: 15px;
+  background: transparent;
+  color: var(--mint-dark);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.progress-settings-btn:hover {
+  background: var(--mint-green);
+  color: white;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 183, 197, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sakura-pink), var(--sakura-dark));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 本周概览 */
+.week-overview {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+.overview-title {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+}
+
+.overview-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.overview-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.overview-day {
+  background: rgba(255, 183, 197, 0.1);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.overview-day-name {
+  font-weight: 500;
+  color: var(--sakura-dark);
+  margin-bottom: 8px;
+}
+
+.overview-day-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.overview-course-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.overview-period {
+  font-size: 0.8rem;
+  color: var(--mint-dark);
+}
+
+.overview-name {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.overview-location {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
 /* 课程表时间列 */
 .period-name {
   font-weight: 500;
@@ -2380,6 +2631,85 @@ ul {
 .file-delete-btn:hover {
   background: #ff6b6b;
   color: white;
+}
+
+/* 文件夹相关样式 */
+.files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.folder-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.folder-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--sakura-pink);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--sakura-pink);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.folder-btn:hover,
+.folder-btn.active {
+  background: var(--sakura-pink);
+  color: white;
+}
+
+.file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-folder-tag {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.folder-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.folder-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.folder-option:hover {
+  background: rgba(255, 183, 197, 0.1);
+  border-color: var(--sakura-pink);
+}
+
+.modal-content-sm {
+  max-width: 400px;
+}
+
+.text-muted {
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 /* ===== PDF 预览模态框 ===== */
