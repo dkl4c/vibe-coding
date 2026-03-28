@@ -458,7 +458,7 @@
 
       const categoryMap = { '1': '课程笔记', '2': '课程课件', '3': '课程作业文件' };
       const categoryFolder = categoryMap[fileCategory] || '课程课件';
-      const githubPath = `https://github.com/mako-kawai/vibe-coding/tree/main/${courseId}/${categoryFolder}`;
+      const githubPath = getUploadGitHubPath(courseId, categoryFolder);
 
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -519,7 +519,7 @@
       if (file.type === 'pdf') {
         // 显示 PDF 信息和下载链接
         const categoryFolder = file.fileCategory || '课程课件';
-        const githubUrl = `https://github.com/mako-kawai/vibe-coding/tree/main/${file.courseId}/${categoryFolder}`;
+        const githubUrl = getUploadGitHubPath(file.courseId, categoryFolder);
         alert(`📕 ${file.filename}\n\n文件已记录，请前往 GitHub 上传：\n${githubUrl}\n\n上传后点击"在新窗口打开"查看。`);
         return;
       }

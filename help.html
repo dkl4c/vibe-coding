@@ -200,6 +200,18 @@
             <button type="button" class="course-btn" style="margin-top: 10px;" onclick="saveGitHubRepo()">保存设置</button>
             <div id="githubSaveStatus" style="margin-top: 8px;"></div>
           </div>
+
+          <!-- 更换背景图 -->
+          <div class="help-card">
+            <h3>🖼️ 更换背景图</h3>
+            <p>上传您自己的图片作为网站背景（樱花风格效果更佳）：</p>
+            <div class="form-group" style="margin-top: 12px;">
+              <input type="file" id="bgImageInput" accept="image/*" style="display: none;" onchange="handleBgImageUpload(event)">
+              <button type="button" class="course-btn-secondary" onclick="document.getElementById('bgImageInput').click()">📁 选择图片</button>
+              <button type="button" class="course-btn" style="margin-left: 8px;" onclick="resetBgImage()">恢复默认</button>
+            </div>
+            <div id="bgPreview" style="margin-top: 10px;"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -235,7 +247,61 @@
       setTimeout(() => { status.textContent = ''; }, 3000);
     }
 
-    document.addEventListener('DOMContentLoaded', loadGitHubRepoSetting);
+    // 加载背景图预览
+    function loadBgPreview() {
+      const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+      const preview = document.getElementById('bgPreview');
+      if (userSettings.bgImage) {
+        preview.innerHTML = `<img src="${userSettings.bgImage}" style="max-width: 200px; max-height: 120px; border-radius: 8px; border: 2px solid var(--sakura-pink);">`;
+      } else {
+        preview.innerHTML = '';
+      }
+    }
+
+    // 处理背景图上传
+    function handleBgImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+        userSettings.bgImage = e.target.result;
+        localStorage.setItem('user_settings', JSON.stringify(userSettings));
+
+        // 更新背景
+        document.body.style.backgroundImage = `url('${e.target.result}')`;
+
+        // 更新预览
+        loadBgPreview();
+        alert('背景图已更新！');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 恢复默认背景
+    function resetBgImage() {
+      const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+      delete userSettings.bgImage;
+      localStorage.setItem('user_settings', JSON.stringify(userSettings));
+      document.body.style.backgroundImage = `url('https://minimax-algeng-chat-tts.oss-cn-wulanchabu.aliyuncs.com/ccv2%2F2026-03-27%2FMiniMax-M2.7%2F2037129075998335940%2F488f455ad32b685db8b9bcf4ea36422b11855af4589159b053cc45654388afa8..png?Expires=1774684676&OSSAccessKeyId=LTAI5tGLnRTkBjLuYPjNcKQ8&Signature=gM%2FyZGVJml5pudh5bgWc%2BcHPnF4%3D')`;
+      document.getElementById('bgPreview').innerHTML = '';
+      alert('已恢复默认背景！');
+    }
+
+    // 初始化背景（检查是否有自定义背景）
+    function initBackground() {
+      const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+      if (userSettings.bgImage) {
+        document.body.style.backgroundImage = `url('${userSettings.bgImage}')`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadGitHubRepoSetting();
+      loadBgPreview();
+      initBackground();
+    });
   </script>
 </body>
 </html>

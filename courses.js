@@ -552,6 +552,29 @@ function getEditedDefaultCourses() {
   return JSON.parse(localStorage.getItem('default_courses_edited') || '{}');
 }
 
+/**
+ * 获取用户的 GitHub 仓库路径
+ * @returns {string} githubRepo 或空字符串
+ */
+function getUserGitHubRepo() {
+  const userSettings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+  return userSettings.githubRepo || '';
+}
+
+/**
+ * 获取文件上传的 GitHub 路径
+ * @param {string} courseId 课程ID
+ * @param {string} categoryFolder 子文件夹
+ * @returns {string} 完整的 GitHub 路径
+ */
+function getUploadGitHubPath(courseId, categoryFolder) {
+  const repo = getUserGitHubRepo();
+  if (repo) {
+    return `https://github.com/${repo}/tree/main/${courseId}/${categoryFolder}`;
+  }
+  return `请先在"帮助"页面设置您的 GitHub 仓库路径`;
+}
+
 // 导出供外部使用
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { getAllCourses, getCoursesArray, getCourseById, addUserCourse, deleteUserCourse, updateUserCourse, renderCourseCards };
